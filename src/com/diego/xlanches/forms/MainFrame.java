@@ -39,6 +39,7 @@ import com.diego.xlanches.db.DB;
 import javax.swing.border.BevelBorder;
 import javax.swing.JTable;
 import java.awt.Font;
+import java.util.ArrayList;
 import javax.swing.JFormattedTextField;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
@@ -80,14 +81,7 @@ public class MainFrame extends JFrame {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
-				int tab = tabbedPane.getSelectedIndex();
-				switch (tab) {
-					default: break;
-					case 0: break;
-					case 1: { // PRODUTOS
-						
-					} break;
-				}
+				
 			}
 		});
 		tabbedPane.setBackground(Color.LIGHT_GRAY);
@@ -278,11 +272,7 @@ public class MainFrame extends JFrame {
 		JButton bt_add = new JButton("+");
 		bt_add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Produto prod = new Produto();
-				prod.setNome(tx_nomeprod.getText());
-				prod.setDescricao(tx_proddesc.getText());
-				prod.setValor(((Number) tx_valor.getValue()).doubleValue());
-				ProdutoDAO.get().insert(prod);
+				
 			}
 		});
 		bt_add.setToolTipText("Adicionar");

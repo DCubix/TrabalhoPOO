@@ -2,6 +2,7 @@ package com.diego.xlanches.data;
 
 public class Produto {
 
+	private int id;
 	private String nome;
 	private String descricao;
 	private double valor;
@@ -11,7 +12,13 @@ public class Produto {
 		this.descricao = "";
 		this.valor = 0;
 	}
-	
+
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}	
 	public String getNome() {
 		return nome;
 	}
@@ -30,5 +37,11 @@ public class Produto {
 	public void setValor(double valor) {
 		this.valor = valor;
 	}	
+
+	@Override
+	public String toString() {
+		return nome;
+	}
+	
 	
 }
