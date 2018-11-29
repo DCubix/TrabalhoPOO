@@ -11,15 +11,27 @@ import com.diego.xlanches.data.ItemCaixa;
 import com.diego.xlanches.data.ItemCaixaTableModel;
 import com.diego.xlanches.data.Produto;
 import com.diego.xlanches.data.ProdutoTableModel;
+import com.diego.xlanches.util.GeradorDeNota;
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.scene.input.MouseButton;
+import javax.imageio.ImageIO;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFormattedTextField;
@@ -102,6 +114,15 @@ public class MainForm extends javax.swing.JFrame {
         tx_pdesc = new javax.swing.JTextField();
         jScrollPane3 = new javax.swing.JScrollPane();
         tb_produtos = new javax.swing.JTable();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
 
         mn_delete.setText("Deletar");
         mn_delete.addActionListener(new java.awt.event.ActionListener() {
@@ -120,6 +141,10 @@ public class MainForm extends javax.swing.JFrame {
         pm_tablecell_caixa.add(mn_delete_cx);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Gestor de Lanchonete");
+        setLocationByPlatform(true);
+        setResizable(false);
+        getContentPane().setLayout(new java.awt.CardLayout());
 
         tabs.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -213,6 +238,11 @@ public class MainForm extends javax.swing.JFrame {
         });
         tb_caixa.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tb_caixa.getTableHeader().setReorderingAllowed(false);
+        tb_caixa.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tb_caixaMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tb_caixa);
 
         jPanel1.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -220,12 +250,17 @@ public class MainForm extends javax.swing.JFrame {
         jPanel4.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
         jPanel4.setLayout(new java.awt.BorderLayout(6, 0));
 
+        jPanel5.setBackground(new java.awt.Color(102, 102, 102));
         jPanel5.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jPanel5.setForeground(new java.awt.Color(255, 255, 255));
         jPanel5.setPreferredSize(new java.awt.Dimension(560, 80));
 
+        jLabel3.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("TOTAL");
 
         tx_total.setFont(new java.awt.Font("Dialog", 1, 36)); // NOI18N
+        tx_total.setForeground(new java.awt.Color(255, 255, 255));
         tx_total.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         tx_total.setText("R$0,00");
         tx_total.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
@@ -237,7 +272,7 @@ public class MainForm extends javax.swing.JFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tx_total, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
+                    .addComponent(tx_total, javax.swing.GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -377,22 +412,68 @@ public class MainForm extends javax.swing.JFrame {
 
         tabs.addTab("Produtos", new javax.swing.ImageIcon(getClass().getResource("/com/diego/xlanches/res/food.png")), jPanel2); // NOI18N
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(tabs, javax.swing.GroupLayout.DEFAULT_SIZE, 689, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(tabs, javax.swing.GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+        jPanel7.setLayout(new java.awt.GridBagLayout());
+
+        jLabel4.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        jLabel4.setText("GESTOR DE LANCHONETE SIMPLES");
+        jLabel4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(36, 12, 36, 12);
+        jPanel7.add(jLabel4, gridBagConstraints);
+
+        jLabel8.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel8.setText("ALUNO");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        jPanel7.add(jLabel8, gridBagConstraints);
+
+        jLabel9.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel9.setText("Diego da Silva Lopes");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        jPanel7.add(jLabel9, gridBagConstraints);
+
+        jLabel10.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel10.setText("RGA");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        jPanel7.add(jLabel10, gridBagConstraints);
+
+        jLabel11.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel11.setText("2015.1802.011-9");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        jPanel7.add(jLabel11, gridBagConstraints);
+
+        jLabel12.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel12.setText("DISCIPLINA");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        jPanel7.add(jLabel12, gridBagConstraints);
+
+        jLabel13.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel13.setText("Programação Orientada a Objetos");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        jPanel7.add(jLabel13, gridBagConstraints);
+
+        jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/diego/xlanches/res/food_big.png"))); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        jPanel7.add(jLabel14, gridBagConstraints);
+
+        tabs.addTab("Sobre", new javax.swing.ImageIcon(getClass().getResource("/com/diego/xlanches/res/information-variant.png")), jPanel7); // NOI18N
+
+        getContentPane().add(tabs, "card2");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -444,6 +525,10 @@ public class MainForm extends javax.swing.JFrame {
 		prod.setDescricao(tx_pdesc.getText());
 		prod.setValor(((Number) tx_valor.getValue()).doubleValue());
 		ProdutoDAO.get().insert(prod);
+		
+		tx_pnome.setText("");
+		tx_pdesc.setText("");
+		tx_valor.setText("");
 		tabsStateChanged(null);
     }//GEN-LAST:event_bt_add1ActionPerformed
 
@@ -461,7 +546,10 @@ public class MainForm extends javax.swing.JFrame {
     }//GEN-LAST:event_mn_deleteActionPerformed
 
     private void mn_delete_cxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mn_delete_cxActionPerformed
-        // TODO add your handling code here:
+        if (tb_caixa.getSelectedRow()!= -1) {
+			ItemCaixaDAO.get().delete(((ItemCaixaTableModel)tb_caixa.getModel()).getData().get(tb_caixa.getSelectedRow()));
+			tabsStateChanged(null);
+		}
     }//GEN-LAST:event_mn_delete_cxActionPerformed
 
     private void bt_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_addActionPerformed
@@ -469,6 +557,8 @@ public class MainForm extends javax.swing.JFrame {
 		p.setProduto((Produto) sp_produtos.getSelectedItem());
 		p.setQuantidade((int) sp_qtd.getValue());
 		ItemCaixaDAO.get().insert(p);
+		
+		sp_qtd.setValue(1);
 		tabsStateChanged(null);
     }//GEN-LAST:event_bt_addActionPerformed
 
@@ -493,31 +583,91 @@ public class MainForm extends javax.swing.JFrame {
 		double total = itens.stream().map((t) -> {
 				return t.getQuantidade() * t.getProduto().getValor();
 			}).reduce((t, u) -> {
-				return t.doubleValue() + u.doubleValue(); //To change body of generated lambdas, choose Tools | Templates.
+				return t.doubleValue() + u.doubleValue();
 			}).get();
 		
 		final JPanel panel = getMoneyInput();
+		final JFormattedTextField valor = (JFormattedTextField) panel.getComponent(0);
 		int res = JOptionPane.showConfirmDialog(this,
                         panel,
                         "Valor Pago",
                         JOptionPane.OK_CANCEL_OPTION,
                         JOptionPane.PLAIN_MESSAGE);
 		
-		if (res == JOptionPane.OK_OPTION) {
+		if (res == JOptionPane.OK_OPTION && valor.getValue() != null) {
+			final GeradorDeNota gn = new GeradorDeNota();
+			gn.println(GeradorDeNota.centerString(GeradorDeNota.WIDTH, "X-LANCHES"));
+			gn.println(GeradorDeNota.centerString(GeradorDeNota.WIDTH, "Lanches e Bebidas"));
+			gn.separador();
+			
+			gn.println(
+					"%6s %17s %4s %10s",
+					"CÓD.",
+					"PRODUTO",
+					"QTD.",
+					"VALOR"
+			);
 			for (ItemCaixa i : itens) {
+				gn.println(
+						"%06d|%17s|%4d|%10s",
+						i.getId(),
+						i.getProduto().getNome(),
+						i.getQuantidade(),
+						NumberFormat.getCurrencyInstance(ptBR).format(i.getProduto().getValor())
+				);
 				ItemCaixaDAO.get().fecha(i.getId());
 			}
+			gn.separador();
+			
 			tabsStateChanged(null);
 			
+			double valorPago = ((Number) valor.getValue()).doubleValue();
+			double troco = valorPago - total;
+			
+			gn.println("TOTAL: %33s", NumberFormat.getCurrencyInstance(ptBR).format(total));
+			gn.println("PAGO:  %33s", NumberFormat.getCurrencyInstance(ptBR).format(valorPago));
+			gn.separador();
+			gn.println("TROCO: %33s", NumberFormat.getCurrencyInstance(ptBR).format(troco));
+			gn.separador();
+			gn.println(GeradorDeNota.centerString(GeradorDeNota.WIDTH, "Obrigado pela preferência!"));
+			
+			final SimpleDateFormat fmt = new SimpleDateFormat("ddMMyyyyHHmmss");
+			final String fileName = "nota_" + fmt.format(new Date()) + ".png";
 			try {
-				double troco = ((Number) tx_valor.getValue()).doubleValue() - total;
-				String trocoText = ("Troco: " + NumberFormat.getCurrencyInstance(ptBR).format(troco));
-				JOptionPane.showMessageDialog(this, trocoText, "Finalizado", JOptionPane.INFORMATION_MESSAGE);
-			} catch (Exception ex) {
-
+				final File fileNota = new File(fileName);
+				if (fileNota.exists()) {
+					fileNota.delete();
+				}
+				fileNota.createNewFile();
+				
+				ImageIO.write(gn.gerar(), "PNG", new FileOutputStream(fileNota));				
+			} catch (FileNotFoundException ex) {
+				Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IOException ex) {
+				Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
 			}
+			
+			String trocoText = ("Troco: " + NumberFormat.getCurrencyInstance(ptBR).format(troco));
+			JOptionPane.showMessageDialog(this, trocoText, "Finalizado", JOptionPane.INFORMATION_MESSAGE);
+			
+			final File fileNota = new File(fileName);
+			if (fileNota.exists()) {
+				try {
+					Desktop.getDesktop().open(fileNota);
+				} catch (IOException ex) {
+					Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+		} else if (tx_valor.getValue() == null) {
+			JOptionPane.showMessageDialog(this, "Nenhum valor fornecido.", "Erro", JOptionPane.ERROR_MESSAGE);
 		}
     }//GEN-LAST:event_bt_fecharActionPerformed
+
+    private void tb_caixaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tb_caixaMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON3) {
+			pm_tablecell_caixa.show(evt.getComponent(), evt.getX(), evt.getY());
+		}
+    }//GEN-LAST:event_tb_caixaMouseClicked
 
 	/**
 	 * @param args the command line arguments
@@ -559,17 +709,26 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JButton bt_add1;
     private javax.swing.JButton bt_fechar;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JMenuItem mn_delete;
